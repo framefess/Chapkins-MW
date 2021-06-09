@@ -1,7 +1,7 @@
 {
     "name": "Chapkins-MW",
     "description": "metalwar tool",
-    "version": "1.01",
+    "version": "1.0.3",
     "manifest_version": 3,
 
     "permissions": [
