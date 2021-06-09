@@ -126,7 +126,7 @@ const start = async () => {
                                     console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
                                 }
                             } else {
-                                let btn_raid = $(value).children().eq(3).children('.button.raid')[0];
+                                let btn_raid = $(value).children().eq(3).children('.button')[0];
                                 if ($(btn_raid).css("opacity") != 0.5) {
                                     let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
                                     if (cpu_res.ok) {

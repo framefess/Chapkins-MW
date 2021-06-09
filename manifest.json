@@ -28,7 +28,8 @@
     "content_scripts": [
         {
             "matches": [
-                "https://game2.metal-war.com/"
+                "https://game2.metal-war.com/",
+"*://game2.metal-war.com*"
             ],
             "run_at": "document_end",
             "js": [
