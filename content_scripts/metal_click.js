@@ -27,27 +27,83 @@
 //         }
 //     }
 // }, 1000);
-
 var btn1 = "<button id='start' style='margin: 5px;'>START</button>";
 var btn2 = "<button id='stop' style='margin: 5px;'>STOP</button>";
 // var btn2 = "<label style='margin: 5px;'></label>";
 var span = "<span id='sts' style='margin: 5px;color:red;'></span>";
-var objbtn = `<div style='position: relative;
-display: flex;
-z-index: 1;
-margin-left: auto;
-margin-right: auto;
-text-align: center;
-justify-content: center;
-align-items: center;'>${btn1}${btn2}${span}</div>`;
+var linebreak = '<div style="width: 100%;"></div>';
+var divtimerand = `<div style="">
+<input id="timerand_min"type="number" min="0" value="0" onchange="document.getElementById('timerand_max').min=this.value;"/>
+<label>MIN</label>
+<input id="timerand_max"type="number" min="0" value="0"/>
+<label>MAX </label>
+<button id='timerand_set' style='margin: 5px;'>SET</button>
+<button hidden id='timerand_get' style='margin: 5px;'>get</button>
+ <label id="timerand_label">Time Random is <span></span>-<span></span> (Second)</label>
+</div>`;
+var objbtn = `<style>
+#Chapkins {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    z-index: 1;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: #a173cd;
+    //background: rgba(0,0,0,.4);
+}
+#Chapkins > input {
+    width:50px;
+    border: 1px solid #a173cd;
+    color: #a173cd;
+    background: rgba(0,0,0,.4);
+}
+#Chapkins input[type=number]{
+    width:50px;
+    border: 1px solid #a173cd;
+    color: #a173cd;
+    background: rgba(0,0,0,.4);
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+</style>
+<div id="Chapkins">${btn1}${btn2}${span}${linebreak}${divtimerand}</div>`;
 var account_name;
 $.when(
     $("body").append(objbtn),
     $.ready
 ).done(function (data) {
     // $('body').trigger('click');
+
+    chrome.storage.local.get(["timerand"], function (result) {
+        console.log('Value currently is ', result);
+        if (typeof result.timerand == undefined) {
+            var timerand_min = 0;
+            var timerand_max = 0;
+            $('#timerand_label > span')[0].text(timerand_min);
+            $('#timerand_label > span')[1].text(timerand_max);
+        } else {
+            var timerand_min = result.timerand.min;
+            var timerand_max = result.timerand.max;
+            $('#timerand_min').prop('min', timerand_min);
+            $('#timerand_min').val(timerand_min);
+            $('#timerand_max').prop('min', timerand_min);
+            $('#timerand_max').val(timerand_max);
+            $('#timerand_label > span:nth-child(1)').text(timerand_min);
+            $('#timerand_label > span:nth-child(2)').text(timerand_max);
+        }
+    });
     $('#start').on('click', start)
     $('#stop').on('click', stop)
+    $('#timerand_set').on('click', timerand_set)
+    $('#timerand_get').on('click', timerand_get)
     timers.start = setInterval(() => {
         let container_content = $('body').find('div.container_content');
         if (container_content.length > 0) {
@@ -66,7 +122,17 @@ let timecount = 1;
 let action_transaction = 0;
 let cpu;
 let list_units = 0;
+let timerand_umin = 0;
+let timerand_umax = 0;
+let cpulitmit = 96;
 const start = async () => {
+    chrome.storage.local.get(["timerand"], function (result) {
+        // console.log('Value currently is ', result.timerand.min);
+        timerand_umin = result.timerand.min;
+        timerand_umax = result.timerand.max;
+        $('#timerand_label > span:nth-child(1)').text(timerand_umin);
+        $('#timerand_label > span:nth-child(2)').text(timerand_umax);
+    });
     $('#sts').text('Moomanow');
     console.log('start');
     timers.runner = setInterval(async () => {
@@ -114,27 +180,40 @@ const start = async () => {
                         if (action_transaction == 0) {
                             if (hp == 0) {
                                 if (mwm - repair_price >= 0) {
-                                    let btn_repair = $(value).children().eq(2).children('.button.raid')[0];
-                                    console.log("🚀 ~ btn_repair", btn_repair)
-                                    $(btn_repair).trigger('click');
-                                    console.log("click: repair", key)
-                                    action_transaction = 1;
-                                    setTimeout(() => {
-                                        action_transaction = 0;
-                                    }, 20 * 1000);
-                                } else {
-                                    console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
-                                }
-                            } else {
-                                let btn_raid = $(value).children().eq(3).children('.button')[0];
-                                if ($(btn_raid).css("opacity") != 0.5) {
+                                    let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
+                                    sleep(addtime * 1000);
+                                    let btn_repair = $(value).children().eq(2).children('.button')[0];
                                     let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
                                     if (cpu_res.ok) {
                                         let res = await cpu_res.json();
                                         cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
                                         console.log("🚀 cpu:", cpu)
                                     }
-                                    if (cpu < 96) {
+                                    if (cpu < cpulitmit) {
+
+                                        console.log("🚀 ~ btn_repair", btn_repair)
+                                        $(btn_repair).trigger('click');
+                                        console.log("click: repair", key)
+                                        action_transaction = 1;
+                                        setTimeout(() => {
+                                            action_transaction = 0;
+                                        }, 20 * 1000);
+                                    }
+                                } else {
+                                    console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
+                                }
+                            } else {
+                                let btn_raid = $(value).children().eq(3).children('.button')[0];
+                                if ($(btn_raid).css("opacity") != 0.5) {
+                                    let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
+                                    sleep(addtime * 1000);
+                                    let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
+                                    if (cpu_res.ok) {
+                                        let res = await cpu_res.json();
+                                        cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                        console.log("🚀 cpu:", cpu)
+                                    }
+                                    if (cpu < cpulitmit) {
                                         console.log("🚀 ~ btn_raid", btn_raid)
                                         $(btn_raid).trigger('click');
                                         console.log("click: raid", key)
@@ -167,3 +246,26 @@ const stop = async () => {
     clearInterval(timers.runner);
 }
 
+
+const timerand_set = async (timerand = {}) => {
+    let min = $('#timerand_min').val();
+    // console.log("🚀 ~ file: metal_click.js ~ line 217 ~ consttimerand_set= ~ min", min)
+    let max = $('#timerand_max').val();
+    // console.log("🚀 ~ file: metal_click.js ~ line 219 ~ consttimerand_set= ~ max", max)
+    timerand = { 'timerand': { "min": min, "max": max } };
+    chrome.storage.local.set(timerand, function () {
+        // console.log('Value is set to ', timerand);
+    });
+}
+
+const timerand_get = async () => {
+    chrome.storage.local.get(["timerand"], function (result) {
+        console.log('Value currently is ', result);
+    });
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
