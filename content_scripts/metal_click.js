@@ -178,7 +178,7 @@ const start = async () => {
                         console.log("🚀 REPAIR.PRICE:", repair_price)
                         console.log("🚀 transaction:", action_transaction)
                         if (action_transaction == 0) {
-                            if (hp <= 540) {
+                            if (hp == 0) {
                                 if (mwm - repair_price >= 0) {
                                     let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
                                     sleep(addtime * 1000);
