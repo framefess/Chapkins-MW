@@ -126,6 +126,7 @@ let timerand_umin = 0;
 let timerand_umax = 0;
 let cpulitmit = 96;
 let timerand_on = 0;
+let n = 1;
 const start = async () => {
     chrome.storage.local.get(["timerand"], function (result) {
         // console.log('Value currently is ', result.timerand.min);
@@ -184,11 +185,15 @@ const start = async () => {
                             if (hp <= 540) {
                                 if (mwm - repair_price >= 0) {
                                     if (timerand_on == 0) {
+                                        n = 1;
                                         let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
                                         setInterval(() => {
                                             timerand_on = 1;
+                                            console.log('Delay', n);
+                                            n++;
                                         }, addtime * 1000);
                                     } else {
+
                                         let btn_repair = $(value).children().eq(2).children('.button')[0];
                                         let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
                                         if (cpu_res.ok) {
@@ -212,9 +217,12 @@ const start = async () => {
                                 }
                             } else {
                                 if (timerand_on == 0) {
+                                    n = 1;
                                     let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
                                     setInterval(() => {
                                         timerand_on = 1;
+                                        console.log('Delay', n);
+                                        n++;
                                     }, addtime * 1000);
                                 } else {
                                     let btn_raid = $(value).children().eq(3).children('.button')[0];
