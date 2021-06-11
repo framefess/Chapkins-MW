@@ -76,6 +76,8 @@ input::-webkit-inner-spin-button {
 </style>
 <div id="Chapkins">${btn1}${btn2}${span}${linebreak}${divtimerand}</div>`;
 var account_name;
+let timerand_umin = 0;
+let timerand_umax = 0;
 $.when(
     $("body").append(objbtn),
     $.ready
@@ -90,8 +92,8 @@ $.when(
             $('#timerand_label > span')[0].text(timerand_min);
             $('#timerand_label > span')[1].text(timerand_max);
         } else {
-            var timerand_min = result.timerand.min;
-            var timerand_max = result.timerand.max;
+            var timerand_min = parseInt(result.timerand.min);
+            var timerand_max = parseInt(result.timerand.max);
             $('#timerand_min').prop('min', timerand_min);
             $('#timerand_min').val(timerand_min);
             $('#timerand_max').prop('min', timerand_min);
@@ -107,7 +109,7 @@ $.when(
     timers.start = setInterval(() => {
         let container_content = $('body').find('div.container_content');
         if (container_content.length > 0) {
-            $('#__layout > div > div > div.container > div.container_content').trigger('click');
+            $('#__layout > div > div > div.container > div.container_content > div.info > div.notification_container').trigger('click');
             clearInterval(timers.start);
             setTimeout(() => {
                 $('#start').trigger('click');
@@ -122,17 +124,16 @@ let timecount = 1;
 let action_transaction = 0;
 let cpu;
 let list_units = 0;
-let timerand_umin = 0;
-let timerand_umax = 0;
 let cpulitmit = 96;
 let timerand_on = 0;
-let timerand_count = 0;
+let timerand_count;
+let timerand_firstset = 0;
 let n = 1;
 const start = async () => {
     chrome.storage.local.get(["timerand"], function (result) {
         // console.log('Value currently is ', result.timerand.min);
-        timerand_umin = result.timerand.min;
-        timerand_umax = result.timerand.max;
+        timerand_umin = parseInt(result.timerand.min);
+        timerand_umax = parseInt(result.timerand.max);
         $('#timerand_label > span:nth-child(1)').text(timerand_umin);
         $('#timerand_label > span:nth-child(2)').text(timerand_umax);
     });
@@ -169,7 +170,6 @@ const start = async () => {
                 let units_container = $('#__layout > div > div > div.container > div.shards_info > div > div > div.menu_container > div > div > div > div.units_container');
                 let units_line = $(units_container).children('.units_line');
                 if (list_units == 0) {
-
                     units_line.each(async (key, value) => {
                         list_units = 1;
                         console.log(key);
@@ -186,13 +186,21 @@ const start = async () => {
                             if (hp <= 540) {
                                 if (mwm - repair_price >= 0) {
                                     if (timerand_on == 0) {
-                                        n = 1;
-                                        let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
-                                        setTimeout(() => {
-                                            timerand_on = 1;
-                                            console.log('Delay', n);
-                                            n++;
-                                        }, addtime * 1000);
+                                        if (timerand_firstset == 0) {
+                                            timerand_firstset = 1;
+                                            // console.log(timerand_umax,timerand_umin);
+                                            let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
+                                            timerand_count = setInterval(() => {
+                                                console.log('Repair Click Delay:', n, 'Addtime', addtime);
+                                                n++;
+                                                console.log('n', n, 'addtime', addtime);
+                                                if (n >= addtime) {
+                                                    clearInterval(timerand_count)
+                                                    n = 1;
+                                                    timerand_on = 1;
+                                                }
+                                            }, 1000);
+                                        }
                                     } else {
                                         let btn_repair = $(value).children().eq(2).children('.button')[0];
                                         let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
@@ -209,6 +217,8 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
+                                                // n = 1;
+                                                timerand_firstset = 0;
                                             }, 20 * 1000);
                                         }
                                     }
@@ -216,19 +226,25 @@ const start = async () => {
                                     console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
                                 }
                             } else {
-                                if (timerand_on == 0) {
-                                    n = 1;
-                                    let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
-                                    setTimeout(() => {
-                                        timerand_on = 1;
-                                        console.log('Delay', n);
-                                        n++;
-                                    }, addtime * 1000);
-                                } else {
-                                    let btn_raid = $(value).children().eq(3).children('.button')[0];
-                                    if ($(btn_raid).css("opacity") != 0.5) {
-                                        let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
-                                        sleep(addtime * 1000);
+                                let btn_raid = $(value).children().eq(3).children('.button')[0];
+                                if ($(btn_raid).css("opacity") != 0.5) {
+                                    if (timerand_on == 0) {
+                                        if (timerand_firstset == 0) {
+                                            timerand_firstset = 1;
+                                            // console.log(timerand_umax,timerand_umin);
+                                            let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
+                                            timerand_count = setInterval(() => {
+                                                console.log('Repair Click Delay:', n, 'Addtime', addtime);
+                                                n++;
+
+                                                if (n >= addtime) {
+                                                    clearInterval(timerand_count);
+                                                    timerand_on = 1;
+                                                    n = 1;
+                                                }
+                                            }, 1000);
+                                        }
+                                    } else {
                                         let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
                                         if (cpu_res.ok) {
                                             let res = await cpu_res.json();
@@ -243,10 +259,13 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
+                                                // n = 1;
+                                                timerand_firstset = 0;
                                             }, 20 * 1000);
                                         }
                                     }
                                 }
+
                             }
                         } else {
                             console.log('transaction in progress WAIT PLS');
