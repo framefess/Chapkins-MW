@@ -171,6 +171,7 @@ const start = async () => {
                                                     timerand_on = 1;
                                                 }
                                             }, 1000);
+                                            return false;
                                         }
                                     } else {
                                         let btn_repair = $(value).children().eq(2).children('.button')[0];
@@ -188,9 +189,10 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
-                                                // n = 1;
+                                                n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
+                                            return false;
                                         }
                                     }
                                 } else {
@@ -214,6 +216,7 @@ const start = async () => {
                                                     n = 1;
                                                 }
                                             }, 1000);
+                                            return false;
                                         }
                                     } else {
                                         let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
@@ -230,9 +233,10 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
-                                                // n = 1;
+                                                n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
+                                            return false;
                                         }
                                     }
                                 }
