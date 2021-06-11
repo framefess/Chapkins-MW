@@ -259,6 +259,11 @@ const stop = async () => {
     $('#sts').text('stop');
     console.log('stop');
     clearInterval(timers.runner);
+    clearInterval(timerand_count);
+    action_transaction = 0;
+    timerand_on = 0;
+    // n = 1;
+    timerand_firstset = 0;
 }
 
 
