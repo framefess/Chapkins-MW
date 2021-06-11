@@ -111,7 +111,6 @@ const start = async () => {
     $('#sts').text('Moomanow');
     console.log('start');
     timers.runner = setInterval(async () => {
-
         let mwm = parseInt(($('body').find('.money').text()).slice(0, -4));
         console.log("🚀 Money", mwm, 'MWM')
         let notify_container = $('#__layout > div > div > div.notify_container').css('display');
@@ -185,12 +184,16 @@ const start = async () => {
                                             $(btn_repair).trigger('click');
                                             console.log("click: repair", key)
                                             action_transaction = 1;
+                                            timerand_on = 0;
+                                            n = 1;
+                                            timerand_firstset = 0;
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
                                                 n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
+                                            return false;
                                         }
                                     }
                                 } else {
@@ -226,12 +229,16 @@ const start = async () => {
                                             $(btn_raid).trigger('click');
                                             console.log("click: raid", key)
                                             action_transaction = 1;
+                                            timerand_on = 0;
+                                            n = 1;
+                                            timerand_firstset = 0;
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
                                                 n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
+                                            return false;
                                         }
                                     }
                                 }
