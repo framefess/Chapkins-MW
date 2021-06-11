@@ -1,32 +1,3 @@
-// let click = 0;
-// let waitclick = 0;
-// let n = 0;
-// let notibefore;
-// let message = 0;
-// const checkinterval = setInterval(() => {
-//     if(message == 0 ){
-//         console.log('RunnRRRRR');
-//         message = 1;
-//     }
-//     n += 1000;
-//     if (n > 8000) {
-//         if ($('#__layout > div > div > div.notify_container').css('display') == 'none') {
-//             if (click == 1) {
-//                 // console.log('click == 1');
-//                 waitclick += 1000;
-//                 if (waitclick > (40 * 1000)) {
-//                     click = 0;
-//                 }
-//             } else {
-//                 // console.log('click != 1');
-//                 notibefore = $('#__layout > div > div > div.container > div.container_content > div.info > div.notification_container')
-//                 $('#__layout > div > div > div.container > div.container_content > div.buttons > div').trigger('click');
-//                 click = 1;
-//                 waitclick = 0;
-//             }
-//         }
-//     }
-// }, 1000);
 var btn1 = "<button id='start' style='margin: 5px;'>START</button>";
 var btn2 = "<button id='stop' style='margin: 5px;'>STOP</button>";
 // var btn2 = "<label style='margin: 5px;'></label>";
