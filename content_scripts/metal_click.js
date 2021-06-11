@@ -188,7 +188,7 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
-                                                // n = 1;
+                                                n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
                                         }
@@ -207,7 +207,6 @@ const start = async () => {
                                             timerand_count = setInterval(() => {
                                                 console.log('Repair Click Delay:', n, 'Addtime', addtime);
                                                 n++;
-
                                                 if (n >= addtime) {
                                                     clearInterval(timerand_count);
                                                     timerand_on = 1;
@@ -230,7 +229,7 @@ const start = async () => {
                                             setTimeout(() => {
                                                 action_transaction = 0;
                                                 timerand_on = 0;
-                                                // n = 1;
+                                                n = 1;
                                                 timerand_firstset = 0;
                                             }, 20 * 1000);
                                         }
