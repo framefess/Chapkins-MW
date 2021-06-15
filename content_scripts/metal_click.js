@@ -72,9 +72,9 @@ $.when(
             var timerand_min = 0;
             var timerand_max = 0;
             hp_min = 0;
-            $('#timerand_label > span')[0].text(timerand_min);
-            $('#timerand_label > span')[1].text(timerand_max);
-            $('#timerand_label > span')[2].text(hp_min);
+            $('#timerand_label > span:nth-child(1)').text(timerand_min);
+            $('#timerand_label > span:nth-child(2)').text(timerand_max);
+            $('#timerand_label > span:nth-child(4)').text(hp_min);
         } else {
             var timerand_min = parseInt(result.timerand.min);
             var timerand_max = parseInt(result.timerand.max);
@@ -86,7 +86,7 @@ $.when(
             $('#hp_min').val(hp_min);
             $('#timerand_label > span:nth-child(1)').text(timerand_min);
             $('#timerand_label > span:nth-child(2)').text(timerand_max);
-            $('#timerand_label > span:nth-child(3)').text(hp_min);
+            $('#timerand_label > span:nth-child(4)').text(hp_min);
         }
     });
     $('#start').on('click', start)
@@ -126,7 +126,7 @@ const start = async () => {
         hp_min = parseInt(result.timerand.hp_min);
         $('#timerand_label > span:nth-child(1)').text(timerand_umin);
         $('#timerand_label > span:nth-child(2)').text(timerand_umax);
-        $('#timerand_label > span:nth-child(3)').text(hp_min);
+        $('#timerand_label > span:nth-child(4)').text(hp_min);
     });
     $('#sts').text('Moomanow');
     console.log('start');
