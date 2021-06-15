@@ -7,11 +7,15 @@ var divtimerand = `<div style="">
 <input id="timerand_min"type="number" min="0" value="0" onchange="document.getElementById('timerand_max').min=this.value;"/>
 <label>MIN</label>
 <input id="timerand_max"type="number" min="0" value="0"/>
-<label>MAX </label>
-<button id='timerand_set' style='margin: 5px;'>SET</button>
+<label>MAX</label>
+<input id="hp_min"type="number" min="0" value="0"/>
+<label>HP</label>
 <button hidden id='timerand_get' style='margin: 5px;'>get</button>
- <label id="timerand_label">Time Random is <span></span>-<span></span> (Second)</label>
 </div>`;
+var btnset = `<button id='timerand_set' style='margin: 5px;'>SET</button>`;
+var labelstatus = ` <label id="timerand_label">Time Random is <span></span>-<span></span> (Second)</br>
+                    REPAIR IS <span></span> HP
+</label>`;
 var objbtn = `<style>
 #Chapkins {
     position: relative;
@@ -45,10 +49,17 @@ input::-webkit-inner-spin-button {
 }
 
 </style>
-<div id="Chapkins">${btn1}${btn2}${span}${linebreak}${divtimerand}</div>`;
-var account_name;
+<div id="Chapkins">
+${btn1}${btn2}${span}${linebreak}
+${divtimerand}${linebreak}
+${btnset}${linebreak}
+${labelstatus}
+</div>`;
+
+let account_name;
 let timerand_umin = 0;
 let timerand_umax = 0;
+let hp_min = 0;
 $.when(
     $("body").append(objbtn),
     $.ready
@@ -60,17 +71,22 @@ $.when(
         if (typeof result.timerand == undefined) {
             var timerand_min = 0;
             var timerand_max = 0;
+            hp_min = 0;
             $('#timerand_label > span')[0].text(timerand_min);
             $('#timerand_label > span')[1].text(timerand_max);
+            $('#timerand_label > span')[2].text(hp_min);
         } else {
             var timerand_min = parseInt(result.timerand.min);
             var timerand_max = parseInt(result.timerand.max);
+            hp_min = parseInt(result.timerand.hp_min);
             $('#timerand_min').prop('min', timerand_min);
             $('#timerand_min').val(timerand_min);
             $('#timerand_max').prop('min', timerand_min);
             $('#timerand_max').val(timerand_max);
+            $('#hp_min').val(hp_min);
             $('#timerand_label > span:nth-child(1)').text(timerand_min);
             $('#timerand_label > span:nth-child(2)').text(timerand_max);
+            $('#timerand_label > span:nth-child(3)').text(hp_min);
         }
     });
     $('#start').on('click', start)
@@ -100,19 +116,23 @@ let timerand_on = 0;
 let timerand_count;
 let timerand_firstset = 0;
 let n = 1;
+let mwm;
 const start = async () => {
+
     chrome.storage.local.get(["timerand"], function (result) {
         // console.log('Value currently is ', result.timerand.min);
         timerand_umin = parseInt(result.timerand.min);
         timerand_umax = parseInt(result.timerand.max);
+        hp_min = parseInt(result.timerand.hp_min);
         $('#timerand_label > span:nth-child(1)').text(timerand_umin);
         $('#timerand_label > span:nth-child(2)').text(timerand_umax);
+        $('#timerand_label > span:nth-child(3)').text(hp_min);
     });
     $('#sts').text('Moomanow');
     console.log('start');
     timers.runner = setInterval(async () => {
-
-        let mwm = parseInt(($('body').find('.money').text()).slice(0, -4));
+        account_name = ($('body').find('.console').text()).replace('MetalWarGame:console', '').replace('>', '').trim();
+        mwm = parseInt(($('body').find('.money').text()).slice(0, -4));
         console.log("🚀 Money", mwm, 'MWM')
         let notify_container = $('#__layout > div > div > div.notify_container').css('display');
         if (notify_container == 'none') {
@@ -137,120 +157,130 @@ const start = async () => {
                     }
                 })
             } else {
-                let account_name = ($('body').find('.console').text()).replace('MetalWarGame:console', '').replace('>', '').trim();
+
                 let units_container = $('#__layout > div > div > div.container > div.shards_info > div > div > div.menu_container > div > div > div > div.units_container');
                 let units_line = $(units_container).children('.units_line');
-                if (list_units == 0) {
-                    units_line.each(async (key, value) => {
-                        list_units = 1;
-                        console.log(key);
-                        // let units_line = $(value).children('.units_line');
-                        // // let units_line = $('#__layout > div > div > div.container > div.shards_info > div > div > div.menu_container > div > div > div > div.units_container > div.units_line');
-                        // console.log(units_line);
-                        let hp = parseInt($(value).find('.hp_text').text().split('/').shift());
-                        let max_hp = parseInt($(value).find('.hp_text').text().split('/').pop());
+                if (action_transaction == 0) {
+                    if ($(units_line).length > 0) {
+                        let unit = $(units_line)[list_units];
+                        console.log(unit);
+                        let hp = parseInt($(unit).find('.hp_text').text().split('/').shift());
+                        let max_hp = parseInt($(unit).find('.hp_text').text().split('/').pop());
                         console.log("🚀 HP:", hp, '🚀 HP.MAX:', max_hp)
-                        let repair_price = parseInt($(value).find('.repair_price').text());
+                        let repair_price = parseInt($(unit).find('.repair_price').text());
                         console.log("🚀 REPAIR.PRICE:", repair_price)
                         console.log("🚀 transaction:", action_transaction)
-                        if (action_transaction == 0) {
-                            if (hp <= 0) {
-                                if (mwm - repair_price >= 0) {
-                                    if (timerand_on == 0) {
-                                        if (timerand_firstset == 0) {
-                                            timerand_firstset = 1;
-                                            // console.log(timerand_umax,timerand_umin);
-                                            let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
-                                            timerand_count = setInterval(() => {
-                                                console.log('Repair Click Delay:', n, 'Addtime', addtime);
-                                                n++;
-                                                console.log('n', n, 'addtime', addtime);
-                                                if (n >= addtime) {
-                                                    clearInterval(timerand_count)
-                                                    n = 1;
-                                                    timerand_on = 1;
-                                                }
-                                            }, 1000);
-                                            return false;
-                                        }
-                                    } else {
-                                        let btn_repair = $(value).children().eq(2).children('.button')[0];
-                                        let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
-                                        if (cpu_res.ok) {
-                                            let res = await cpu_res.json();
+                        let btn_raid = $(unit).children().eq(3).children('.button')[0];
+                        let btn_repair = $(unit).children().eq(2).children('.button')[0];
+                        if (hp <= hp_min) {
+                            if (mwm - repair_price >= 0) {
+                                action_transaction = 1;
+                                let addtime = Math.floor(Math.random() * (timerand_umax + 1 - timerand_umin) + timerand_umin);
+                                timerand_count = setInterval(() => {
+                                    console.log('Repair Click Delay:', n, 'Addtime', addtime);
+                                    n++;
+                                    // console.log('n', n, 'addtime', addtime);
+                                    if (n >= addtime) {
+                                        clearInterval(timerand_count)
+                                        n = 1;
+                                        // timerand_on = 1;
+                                    }
+                                }, 1000);
+                                setTimeout(() => {
+                                    fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name)
+                                        .then((e) => {
+                                            if (!e.ok) {
+                                                action_transaction = 0;
+                                                n = 1;
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return e.json();
+                                        }).then((res) => {
+                                            console.log(res);
                                             cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
                                             console.log("🚀 cpu:", cpu)
-                                        }
-                                        if (cpu < cpulitmit) {
-                                            // console.log("🚀 ~ btn_repair", btn_repair)
-                                            $(btn_repair).trigger('click');
-                                            console.log("click: repair", key)
-                                            action_transaction = 1;
-                                            setTimeout(() => {
+                                            if (cpu < cpulitmit) {
+                                                console.log("🚀 ~ btn_repair", btn_repair)
+                                                $(btn_repair).trigger('click');
+                                                console.log("click: repair", list_units)
+                                                setTimeout(() => {
+                                                    action_transaction = 0;
+                                                    n = 1;
+                                                    // timerand_on = 0;
+                                                    // timerand_firstset = 0;
+                                                }, 20 * 1000);
+                                                // return false;
+                                            } else {
+                                                console.log("🚀 cant click cuz cpu > limit", cpu)
                                                 action_transaction = 0;
-                                                timerand_on = 0;
                                                 n = 1;
-                                                timerand_firstset = 0;
-                                            }, 20 * 1000);
-                                            return false;
-                                        }
-                                    }
-                                } else {
-                                    console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
-                                }
+                                            }
+                                        });
+                                }, addtime * 1000);
+
                             } else {
-                                let btn_raid = $(value).children().eq(3).children('.button')[0];
-                                if ($(btn_raid).css("opacity") != 0.5) {
-                                    if (timerand_on == 0) {
-                                        if (timerand_firstset == 0) {
-                                            timerand_firstset = 1;
-                                            // console.log(timerand_umax,timerand_umin);
-                                            let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
-                                            timerand_count = setInterval(() => {
-                                                console.log('Mine/Raid Click Delay:', n, 'Addtime', addtime);
-                                                n++;
+                                console.log('cant repair not enought MWM need : ', repair_price - mwm, 'MWM');
+                                list_units += 1;
+                            }
 
-                                                if (n >= addtime) {
-                                                    clearInterval(timerand_count);
-                                                    timerand_on = 1;
-                                                    n = 1;
-                                                }
-                                            }, 1000);
-                                            return false;
+                        } else if ($(btn_raid).css("opacity") != 0.5) {
+                            action_transaction = 1;
+                            let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
+                            timerand_count = setInterval(() => {
+                                console.log('Mine/Raid Click Delay:', n, 'Addtime', addtime);
+                                n++;
+
+                                if (n >= addtime) {
+                                    clearInterval(timerand_count);
+                                    // timerand_on = 1;
+                                    n = 1;
+                                }
+                            }, 1000);
+                            setTimeout(() => {
+                                fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name)
+                                    .then((e) => {
+                                        if (!e.ok) {
+                                            action_transaction = 0;
+                                            n = 1;
+                                            throw new Error('Network response was not ok');
                                         }
-                                    } else {
-                                        let cpu_res = await fetch('https://wax.cryptolions.io/v2/state/get_account?account=' + account_name);
-                                        if (cpu_res.ok) {
-                                            let res = await cpu_res.json();
-                                            cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
-                                            console.log("🚀 cpu:", cpu)
-                                        }
+                                        return e.json();
+                                    }).then((res) => {
+                                        console.log(res);
+                                        cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                        console.log("🚀 cpu:", cpu)
                                         if (cpu < cpulitmit) {
-                                            // console.log("🚀 ~ btn_raid", btn_raid)
+                                            console.log("🚀 ~ btn_raid", btn_raid)
                                             $(btn_raid).trigger('click');
-                                            console.log("click: raid", key)
-                                            action_transaction = 1;
+                                            console.log("click: raid", list_units)
                                             setTimeout(() => {
                                                 action_transaction = 0;
-                                                timerand_on = 0;
+                                                // timerand_on = 0;
                                                 n = 1;
-                                                timerand_firstset = 0;
+                                                // timerand_firstset = 0;
                                             }, 20 * 1000);
-                                            return false;
+                                        } else {
+                                            console.log("🚀 cant click cuz cpu > limit", cpu)
+                                            action_transaction = 0;
+                                            n = 1;
                                         }
-                                    }
-                                }
+                                    });
+                            }, addtime * 1000);
 
-                            }
                         } else {
-                            console.log('transaction in progress WAIT PLS');
+                            list_units += 1;
                         }
-                    });
-                    list_units = 0;
+
+                        if (list_units >= $(units_line).length) {
+                            list_units = 0;
+                        }
+
+                    }
+
+                } else {
+                    console.log('transaction in progress WAIT PLS');
                 }
-
             }
-
         }
         // console.log(timecount);
         // timecount++;
@@ -275,8 +305,9 @@ const timerand_set = async (timerand = {}) => {
     let min = $('#timerand_min').val();
     // console.log("🚀 ~ file: metal_click.js ~ line 217 ~ consttimerand_set= ~ min", min)
     let max = $('#timerand_max').val();
+    let hp_min = $('#hp_min').val();
     // console.log("🚀 ~ file: metal_click.js ~ line 219 ~ consttimerand_set= ~ max", max)
-    timerand = { 'timerand': { "min": min, "max": max } };
+    timerand = { 'timerand': { "min": min, "max": max, "hp_min": hp_min } };
     chrome.storage.local.set(timerand, function () {
         // console.log('Value is set to ', timerand);
     });
