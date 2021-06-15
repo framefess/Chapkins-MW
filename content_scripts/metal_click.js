@@ -182,7 +182,7 @@ const start = async () => {
                                             console.log("🚀 cpu:", cpu)
                                         }
                                         if (cpu < cpulitmit) {
-                                            console.log("🚀 ~ btn_repair", btn_repair)
+                                            // console.log("🚀 ~ btn_repair", btn_repair)
                                             $(btn_repair).trigger('click');
                                             console.log("click: repair", key)
                                             action_transaction = 1;
@@ -207,7 +207,7 @@ const start = async () => {
                                             // console.log(timerand_umax,timerand_umin);
                                             let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
                                             timerand_count = setInterval(() => {
-                                                console.log('Repair Click Delay:', n, 'Addtime', addtime);
+                                                console.log('Mine/Raid Click Delay:', n, 'Addtime', addtime);
                                                 n++;
 
                                                 if (n >= addtime) {
@@ -226,7 +226,7 @@ const start = async () => {
                                             console.log("🚀 cpu:", cpu)
                                         }
                                         if (cpu < cpulitmit) {
-                                            console.log("🚀 ~ btn_raid", btn_raid)
+                                            // console.log("🚀 ~ btn_raid", btn_raid)
                                             $(btn_raid).trigger('click');
                                             console.log("click: raid", key)
                                             action_transaction = 1;
