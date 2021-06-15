@@ -305,7 +305,7 @@ const timerand_set = async (timerand = {}) => {
     let min = $('#timerand_min').val();
     // console.log("🚀 ~ file: metal_click.js ~ line 217 ~ consttimerand_set= ~ min", min)
     let max = $('#timerand_max').val();
-    let hp_min = $('#hp_min').val();
+    hp_min = $('#hp_min').val();
     // console.log("🚀 ~ file: metal_click.js ~ line 219 ~ consttimerand_set= ~ max", max)
     timerand = { 'timerand': { "min": min, "max": max, "hp_min": hp_min } };
     chrome.storage.local.set(timerand, function () {
