@@ -242,7 +242,8 @@ const start = async () => {
                                         if (!e.ok) {
                                             action_transaction = 0;
                                             n = 1;
-                                            throw new Error('Network response was not ok');
+                                            // throw new Error('Network response was not ok');
+                                            return false;
                                         }
                                         return e.json();
                                     }).then((res) => {
