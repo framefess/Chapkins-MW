@@ -192,28 +192,32 @@ const start = async () => {
                                             if (!e.ok) {
                                                 action_transaction = 0;
                                                 n = 1;
-                                                throw new Error('Network response was not ok');
+                                                // throw new Error('Network response was not ok');
+                                                return false;
+                                            } else {
+                                                return e.json();
                                             }
-                                            return e.json();
                                         }).then((res) => {
-                                            console.log(res);
-                                            cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
-                                            console.log("🚀 cpu:", cpu)
-                                            if (cpu < cpulitmit) {
-                                                console.log("🚀 ~ btn_repair", btn_repair)
-                                                $(btn_repair).trigger('click');
-                                                console.log("click: repair", list_units)
-                                                setTimeout(() => {
+                                            if (res != false) {
+                                                console.log(res);
+                                                cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                                console.log("🚀 cpu:", cpu)
+                                                if (cpu < cpulitmit) {
+                                                    console.log("🚀 ~ btn_repair", btn_repair)
+                                                    $(btn_repair).trigger('click');
+                                                    console.log("click: repair", list_units)
+                                                    setTimeout(() => {
+                                                        action_transaction = 0;
+                                                        n = 1;
+                                                        // timerand_on = 0;
+                                                        // timerand_firstset = 0;
+                                                    }, 20 * 1000);
+                                                    // return false;
+                                                } else {
+                                                    console.log("🚀 cant click cuz cpu > limit", cpu)
                                                     action_transaction = 0;
                                                     n = 1;
-                                                    // timerand_on = 0;
-                                                    // timerand_firstset = 0;
-                                                }, 20 * 1000);
-                                                // return false;
-                                            } else {
-                                                console.log("🚀 cant click cuz cpu > limit", cpu)
-                                                action_transaction = 0;
-                                                n = 1;
+                                                }
                                             }
                                         });
                                 }, addtime * 1000);
