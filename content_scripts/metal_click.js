@@ -244,27 +244,31 @@ const start = async () => {
                                             n = 1;
                                             // throw new Error('Network response was not ok');
                                             return false;
-                                        }
-                                        return e.json();
-                                    }).then((res) => {
-                                        console.log(res);
-                                        cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
-                                        console.log("🚀 cpu:", cpu)
-                                        if (cpu < cpulitmit) {
-                                            console.log("🚀 ~ btn_raid", btn_raid)
-                                            $(btn_raid).trigger('click');
-                                            console.log("click: raid", list_units)
-                                            setTimeout(() => {
-                                                action_transaction = 0;
-                                                // timerand_on = 0;
-                                                n = 1;
-                                                // timerand_firstset = 0;
-                                            }, 20 * 1000);
                                         } else {
-                                            console.log("🚀 cant click cuz cpu > limit", cpu)
-                                            action_transaction = 0;
-                                            n = 1;
+                                            return e.json();
                                         }
+                                    }).then((res) => {
+                                        if (res != false) {
+                                            console.log(res);
+                                            cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                            console.log("🚀 cpu:", cpu)
+                                            if (cpu < cpulitmit) {
+                                                console.log("🚀 ~ btn_raid", btn_raid)
+                                                $(btn_raid).trigger('click');
+                                                console.log("click: raid", list_units)
+                                                setTimeout(() => {
+                                                    action_transaction = 0;
+                                                    // timerand_on = 0;
+                                                    n = 1;
+                                                    // timerand_firstset = 0;
+                                                }, 20 * 1000);
+                                            } else {
+                                                console.log("🚀 cant click cuz cpu > limit", cpu)
+                                                action_transaction = 0;
+                                                n = 1;
+                                            }
+                                        }
+
                                     });
                             }, addtime * 1000);
 
