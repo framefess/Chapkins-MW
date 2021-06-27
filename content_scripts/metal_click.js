@@ -119,7 +119,7 @@ let n = 1;
 let mwm;
 let apii = 0;
 // "https://wax.pink.gg", "https://api.waxsweden.org",
-const waxapi = ["https://api.wax.alohaeos.com", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"];
+const waxapi = ["https://api.wax.alohaeos.com","https://wax.eosrio.io","https://wax.eosusa.news","https://wax.eosphere.io","https://api-wax.maltablock.org","https://wax.blokcrafters.io","https://hyperion.wax.eosdetroit.io/v2", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"];
 const start = async () => {
 
     chrome.storage.local.get(["timerand"], function (result) {
@@ -288,7 +288,7 @@ const start = async () => {
                                                 console.log("🚀 cpu:", cpu)
                                                 if (cpu < cpulitmit) {
                                                     console.log("🚀 ~ btn_raid", btn_raid)
-                                                    $(btn_raid).trigger('click');
+                                                    // $(btn_raid).trigger('click');
                                                     console.log("click: raid", list_units)
                                                     setTimeout(() => {
                                                         action_transaction = 0;
