@@ -252,7 +252,7 @@ const start = async () => {
                             }, 1000);
                             setTimeout(() => {
                                 console.log(waxapi[apii]);
-                                    fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name, { mode: "no-cors" })
+                                    fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name)
                                         .then((e) => {
                                             console.log(e);
                                             if (!e.ok) {
