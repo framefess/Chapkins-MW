@@ -191,8 +191,7 @@ const start = async () => {
                                 }, 1000);
                                 setTimeout(() => {
                                     console.log(waxapi[apii]);
-                                    try {
-                                        fetch(waxapi[apii] + '/v2/state/get_account?account=' + account_name)
+                                        fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name)
                                             .then((e) => {
                                                 if (!e.ok) {
                                                     action_transaction = 0;
@@ -230,16 +229,6 @@ const start = async () => {
                                                     }
                                                 }
                                             });
-                                    } catch (error) {
-                                        console.log("error");
-                                        // throw new Error('Network response was not ok');
-                                        action_transaction = 0;
-                                        n = 1;
-                                        apii += 1;
-                                        if (apii >= waxapi.length) {
-                                            apii = 0;
-                                        }
-                                    }
 
                                 }, addtime * 1000);
 
@@ -263,8 +252,7 @@ const start = async () => {
                             }, 1000);
                             setTimeout(() => {
                                 console.log(waxapi[apii]);
-                                try {
-                                    fetch(waxapi[apii] + '/v2/state/get_account?account=' + account_name, { mode: "no-cors" })
+                                    fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name, { mode: "no-cors" })
                                         .then((e) => {
                                             console.log(e);
                                             if (!e.ok) {
@@ -304,16 +292,6 @@ const start = async () => {
                                             }
 
                                         });
-                                } catch (error) {
-                                    // throw new Error('Network response was not ok');
-                                    console.log("error");
-                                    action_transaction = 0;
-                                    n = 1;
-                                    apii += 1;
-                                    if (apii >= waxapi.length) {
-                                        apii = 0;
-                                    }
-                                }
                             }, addtime * 1000);
 
                         } else {
