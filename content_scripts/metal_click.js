@@ -288,7 +288,7 @@ const start = async () => {
                                                 console.log("🚀 cpu:", cpu)
                                                 if (cpu < cpulitmit) {
                                                     console.log("🚀 ~ btn_raid", btn_raid)
-                                                    // $(btn_raid).trigger('click');
+                                                    $(btn_raid).trigger('click');
                                                     console.log("click: raid", list_units)
                                                     setTimeout(() => {
                                                         action_transaction = 0;
