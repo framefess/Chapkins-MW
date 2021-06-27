@@ -250,7 +250,7 @@ const start = async () => {
                                 list_units += 1;
                             }
 
-                        } else if ($(btn_raid).css("opacity") == 0.5) {
+                        } else if ($(btn_raid).css("opacity") != 0.5) {
                             action_transaction = 1;
                             let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
                             timerand_count = setInterval(() => {
