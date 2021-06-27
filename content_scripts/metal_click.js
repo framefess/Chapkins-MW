@@ -118,8 +118,10 @@ let timerand_firstset = 0;
 let n = 1;
 let mwm;
 let apii = 0;
-// "https://wax.pink.gg", "https://api.waxsweden.org",
-const waxapi = ["https://api.wax.alohaeos.com","https://wax.eosrio.io","https://wax.eosusa.news","https://wax.eosphere.io","https://api-wax.maltablock.org","https://wax.blokcrafters.io","https://hyperion.wax.eosdetroit.io/v2", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"];
+
+
+// "https://wax.pink.gg", "https://api.waxsweden.org","https://api.wax.alohaeos.com",
+const waxapi = ["https://api.wax.alohaeos.com", "https://wax.eosrio.io", "https://wax.eosusa.news", "https://wax.eosphere.io", "https://api-wax.maltablock.org", "https://wax.blokcrafters.io", "https://hyperion.wax.eosdetroit.io/v2", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"];
 const start = async () => {
 
     chrome.storage.local.get(["timerand"], function (result) {
@@ -136,7 +138,7 @@ const start = async () => {
     timers.runner = setInterval(async () => {
         account_name = ($('body').find('.console').text()).replace('MetalWarGame:console', '').replace('>', '').trim();
         mwm = parseInt(($('body').find('.money').text()).slice(0, -4));
-        console.log("🚀 Money", mwm, 'MWM')
+        // console.log("🚀 Money", mwm, 'MWM')
         let notify_container = $('#__layout > div > div > div.notify_container').css('display');
         if (notify_container == 'none') {
             $('#__layout > div > div > div.container > div.container_content > div.info > div.repair.info_button').trigger('click');
@@ -191,44 +193,55 @@ const start = async () => {
                                 }, 1000);
                                 setTimeout(() => {
                                     console.log(waxapi[apii]);
-                                        fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name)
-                                            .then((e) => {
-                                                if (!e.ok) {
-                                                    action_transaction = 0;
-                                                    n = 1;
-                                                    // throw new Error('Network response was not ok');
-                                                    apii += 1;
-                                                    if (apii >= waxapi.length) {
-                                                        apii = 0;
-                                                    }
-                                                    console.log("error");
-                                                    return false;
-                                                } else {
-                                                    return e.json();
+                                    fetch(waxapi[apii] + '/v2/state/get_account?account=' + account_name)
+                                        .then((e) => {
+                                            if (!e.ok) {
+                                                action_transaction = 0;
+                                                n = 1;
+                                                // throw new Error('Network response was not ok');
+                                                apii += 1;
+                                                if (apii >= waxapi.length) {
+                                                    apii = 0;
                                                 }
-                                            }).then((res) => {
-                                                if (res != false) {
-                                                    console.log(res);
-                                                    cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
-                                                    console.log("🚀 cpu:", cpu)
-                                                    if (cpu < cpulitmit) {
-                                                        console.log("🚀 ~ btn_repair", btn_repair)
-                                                        $(btn_repair).trigger('click');
-                                                        console.log("click: repair", list_units)
-                                                        setTimeout(() => {
-                                                            action_transaction = 0;
-                                                            n = 1;
-                                                            // timerand_on = 0;
-                                                            // timerand_firstset = 0;
-                                                        }, 20 * 1000);
-                                                        // return false;
-                                                    } else {
-                                                        console.log("🚀 cant click cuz cpu > limit", cpu)
+                                                console.log("error");
+                                                return false;
+                                            } else {
+                                                return e.json();
+                                            }
+                                        }).then((res) => {
+                                            if (res != false) {
+                                                console.log(res);
+                                                cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                                console.log("🚀 cpu:", cpu)
+                                                if (cpu < cpulitmit) {
+                                                    console.log("🚀 ~ btn_repair", btn_repair)
+                                                    $(btn_repair).trigger('click');
+                                                    console.log("click: repair", list_units)
+                                                    setTimeout(() => {
                                                         action_transaction = 0;
                                                         n = 1;
-                                                    }
+                                                        // timerand_on = 0;
+                                                        // timerand_firstset = 0;
+                                                    }, 20 * 1000);
+                                                    // return false;
+                                                } else {
+                                                    console.log("🚀 cant click cuz cpu > limit", cpu)
+                                                    action_transaction = 0;
+                                                    n = 1;
                                                 }
-                                            });
+                                            }
+                                        }).catch((error) => {
+                                            action_transaction = 0;
+                                            n = 1;
+                                            console.log(apii);
+                                            console.log(waxapi.length);
+                                            apii += 1;
+                                            if (apii >= waxapi.length) {
+                                                apii = 0;
+                                            }
+                                            // throw new Error('Network response was not ok');
+                                            return false;
+                                        });
 
                                 }, addtime * 1000);
 
@@ -237,7 +250,7 @@ const start = async () => {
                                 list_units += 1;
                             }
 
-                        } else if ($(btn_raid).css("opacity") != 0.5) {
+                        } else if ($(btn_raid).css("opacity") == 0.5) {
                             action_transaction = 1;
                             let addtime = Math.floor(Math.random() * (parseInt(timerand_umax) + 1 - parseInt(timerand_umin)) + parseInt(timerand_umin));
                             timerand_count = setInterval(() => {
@@ -252,46 +265,58 @@ const start = async () => {
                             }, 1000);
                             setTimeout(() => {
                                 console.log(waxapi[apii]);
-                                    fetch(waxapi[0] + '/v2/state/get_account?account=' + account_name)
-                                        .then((e) => {
-                                            console.log(e);
-                                            if (!e.ok) {
+                                fetch(waxapi[apii] + '/v2/state/get_account?account=' + account_name)
+                                    .then((e) => {
+                                        console.log(e);
+                                        if (!e.ok) {
+                                            action_transaction = 0;
+                                            n = 1;
+                                            console.log(apii);
+                                            console.log(waxapi.length);
+                                            apii += 1;
+                                            if (apii >= waxapi.length) {
+                                                apii = 0;
+                                            }
+                                            // throw new Error('Network response was not ok');
+                                            return false;
+                                        } else {
+                                            return e.json();
+                                        }
+                                    }).then((res) => {
+                                        if (res != false) {
+                                            console.log(res);
+                                            cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
+                                            console.log("🚀 cpu:", cpu)
+                                            if (cpu < cpulitmit) {
+                                                console.log("🚀 ~ btn_raid", btn_raid)
+                                                $(btn_raid).trigger('click');
+                                                console.log("click: raid", list_units)
+                                                setTimeout(() => {
+                                                    action_transaction = 0;
+                                                    // timerand_on = 0;
+                                                    n = 1;
+                                                    // timerand_firstset = 0;
+                                                }, 20 * 1000);
+                                            } else {
+                                                console.log("🚀 cant click cuz cpu > limit", cpu)
                                                 action_transaction = 0;
                                                 n = 1;
-                                                console.log(apii);
-                                                console.log(waxapi.length);
-                                                apii += 1;
-                                                if (apii >= waxapi.length) {
-                                                    apii = 0;
-                                                }
-                                                // throw new Error('Network response was not ok');
-                                                return false;
-                                            } else {
-                                                return e.json();
                                             }
-                                        }).then((res) => {
-                                            if (res != false) {
-                                                console.log(res);
-                                                cpu = parseFloat(res.account.cpu_limit.used / res.account.cpu_limit.max * 100);
-                                                console.log("🚀 cpu:", cpu)
-                                                if (cpu < cpulitmit) {
-                                                    console.log("🚀 ~ btn_raid", btn_raid)
-                                                    $(btn_raid).trigger('click');
-                                                    console.log("click: raid", list_units)
-                                                    setTimeout(() => {
-                                                        action_transaction = 0;
-                                                        // timerand_on = 0;
-                                                        n = 1;
-                                                        // timerand_firstset = 0;
-                                                    }, 20 * 1000);
-                                                } else {
-                                                    console.log("🚀 cant click cuz cpu > limit", cpu)
-                                                    action_transaction = 0;
-                                                    n = 1;
-                                                }
-                                            }
+                                        }
 
-                                        });
+                                    })
+                                    .catch((error) => {
+                                        action_transaction = 0;
+                                        n = 1;
+                                        console.log(apii);
+                                        console.log(waxapi.length);
+                                        apii += 1;
+                                        if (apii >= waxapi.length) {
+                                            apii = 0;
+                                        }
+                                        // throw new Error('Network response was not ok');
+                                        return false;
+                                    });
                             }, addtime * 1000);
 
                         } else {
@@ -305,7 +330,7 @@ const start = async () => {
                     }
 
                 } else {
-                    console.log('transaction in progress WAIT PLS');
+                    // console.log('transaction in progress WAIT PLS');
                 }
             }
         }

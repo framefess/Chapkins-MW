@@ -3,11 +3,24 @@
     "description": "metalwar tool",
     "version": "1.1.5",
     "manifest_version": 3,
-
     "permissions": [
         "storage",
         "activeTab",
         "scripting"
+    ],
+    "host_permissions": [
+        "https://api.wax.alohaeos.com/*",
+        "https://wax.eosrio.io/*",
+        "https://wax.eosusa.news/*",
+        "https://wax.eosphere.io/*",
+        "https://api-wax.maltablock.org/*",
+        "https://wax.blokcrafters.io/*",
+        "https://hyperion.wax.eosdetroit.io/v2/*",
+        "https://wax.pink.gg/*",
+        "https://api.waxsweden.org/*",
+        "https://wax.greymass.com/*",
+        "https://wax.dapplica.io/*",
+        "https://wax.cryptolions.io/*"
     ],
     "icons": {
         "16": "/images/get_started16.png",
