@@ -12,6 +12,8 @@ var divtimerand = `<div style="">
 <label>HP</label>
 <input id="timeadd"type="number" min="0" value="0"/>
 <label>timeadd</label>
+<input id="timeaddcheck" type="checkbox" value="timeaddcheck"/>
+<label>18/24</label>
 <button hidden id='timerand_get' style='margin: 5px;'>get</button>
 </div>`;
 var btnset = `<button id='timerand_set' style='margin: 5px;'>SET</button>`;
@@ -64,45 +66,13 @@ let timerand_umin = 0;
 let timerand_umax = 0;
 let hp_min = 0;
 let timeadd = 0;
+let timeaddcheck = false;
 $.when(
     $("body").append(objbtn),
     $.ready
 ).done(function (data) {
     // $('body').trigger('click');
-
-    chrome.storage.local.get(["timerand"], function (result) {
-        // console.log('Value currently is ', result);
-        if (typeof result.timerand == undefined) {
-            var timerand_min = 0;
-            var timerand_max = 0;
-            hp_min = 0;
-            timeadd = 0;
-            $('#timerand_label > span:nth-child(1)').text(timerand_min);
-            $('#timerand_label > span:nth-child(2)').text(timerand_max);
-            $('#timerand_label > span:nth-child(4)').text(hp_min);
-            $('#timerand_label > span:nth-child(6)').text(timeadd);
-        } else {
-
-            var timerand_min = parseInt(result.timerand.min);
-            var timerand_max = parseInt(result.timerand.max);
-            hp_min = parseInt(result.timerand.hp_min);
-            if (typeof result.timerand.timeadd == undefined) {
-                timeadd = 0;
-            } else {
-                timeadd = parseInt(result.timerand.timeadd);
-            }
-            $('#timerand_min').prop('min', timerand_min);
-            $('#timerand_min').val(timerand_min);
-            $('#timerand_max').prop('min', timerand_min);
-            $('#timerand_max').val(timerand_max);
-            $('#hp_min').val(hp_min);
-            $('#timeadd').val(timeadd);
-            $('#timerand_label > span:nth-child(1)').text(timerand_min);
-            $('#timerand_label > span:nth-child(2)').text(timerand_max);
-            $('#timerand_label > span:nth-child(4)').text(hp_min);
-            $('#timerand_label > span:nth-child(6)').text(timeadd);
-        }
-    });
+    fetchtimerand()
     $('#start').on('click', start)
     $('#stop').on('click', stop)
     $('#timerand_set').on('click', timerand_set)
@@ -138,26 +108,17 @@ let timenow;
 // ["https://api.wax.alohaeos.com", "https://wax.eosrio.io", "https://wax.eosusa.news", "https://wax.eosphere.io", "https://api-wax.maltablock.org", "https://wax.blokcrafters.io", "https://hyperion.wax.eosdetroit.io/v2", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"]
 const waxapi = ["https://api.wax.alohaeos.com", "https://wax.eosrio.io", "https://wax.eosusa.news", "https://wax.eosphere.io", "https://api-wax.maltablock.org", "https://wax.blokcrafters.io", "https://hyperion.wax.eosdetroit.io/v2", "https://wax.pink.gg", "https://api.waxsweden.org", "https://wax.greymass.com", "https://wax.dapplica.io", "https://wax.cryptolions.io"];
 const start = async () => {
-
-
-    chrome.storage.local.get(["timerand"], function (result) {
-        // console.log('Value currently is ', result.timerand.min);
-        timerand_umin = parseInt(result.timerand.min);
-        timerand_umax = parseInt(result.timerand.max);
-        hp_min = parseInt(result.timerand.hp_min);
-        timeadd = parseInt(result.timerand.timeadd);
-        $('#timerand_label > span:nth-child(1)').text(timerand_umin);
-        $('#timerand_label > span:nth-child(2)').text(timerand_umax);
-        $('#timerand_label > span:nth-child(4)').text(hp_min);
-        $('#timerand_label > span:nth-child(6)').text(timeadd);
-    });
+    fetchtimerand()
     $('#sts').text('Moomanow');
     console.log('start');
     timers.runner = setInterval(async () => {
         timenow = new Date();
         let gettime = parseInt(timenow.getHours());
-        if ((gettime + timeadd) % 4 != 0) {
-            // console.log("runnnn");
+        console.log("11 ", timeaddcheck);
+        console.log("12 ", (gettime + timeadd) % 4);
+        if ((gettime + timeadd) % 4 != 0 || timeaddcheck == false) {
+
+            console.log("runnnn");
             account_name = ($('body').find('.console').text()).replace('MetalWarGame:console', '').replace('>', '').trim();
             mwm = parseInt(($('body').find('.money').text()).slice(0, -4));
             // console.log("🚀 Money", mwm, 'MWM')
@@ -369,6 +330,9 @@ const stop = async () => {
     console.log('stop');
     clearInterval(timers.runner);
     clearInterval(timerand_count);
+    clearInterval(timers.start);
+    for (var z = 1; z < 99999; z++)
+        window.clearInterval(z);
     action_transaction = 0;
     timerand_on = 0;
     // n = 1;
@@ -382,8 +346,13 @@ const timerand_set = async (timerand = {}) => {
     let max = $('#timerand_max').val();
     hp_min = $('#hp_min').val();
     timeadd = $('#timeadd').val();
+    if ($('#timeaddcheck').prop('checked') == false) {
+        timeaddcheck = false;
+    } else {
+        timeaddcheck = true;
+    }
     // console.log("🚀 ~ file: metal_click.js ~ line 219 ~ consttimerand_set= ~ max", max)
-    timerand = { 'timerand': { "min": min, "max": max, "hp_min": hp_min, "timeadd": timeadd } };
+    timerand = { 'timerand': { "min": min, "max": max, "hp_min": hp_min, "timeadd": timeadd, "timeaddcheck": timeaddcheck } };
     chrome.storage.local.set(timerand, function () {
         // console.log('Value is set to ', timerand);
     });
@@ -398,5 +367,46 @@ const timerand_get = async () => {
 function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
+    });
+}
+
+function fetchtimerand() {
+    chrome.storage.local.get(["timerand"], function (result) {
+        if (typeof result.timerand == undefined) {
+            var timerand_min = 0;
+            var timerand_max = 0;
+            hp_min = 0;
+            timeadd = 0;
+            timeaddcheck = 1;
+            $('#timerand_label > span:nth-child(1)').text(timerand_min);
+            $('#timerand_label > span:nth-child(2)').text(timerand_max);
+            $('#timerand_label > span:nth-child(4)').text(hp_min);
+            $('#timerand_label > span:nth-child(6)').text(timeadd);
+        } else {
+            var timerand_min = parseInt(result.timerand.min);
+            var timerand_max = parseInt(result.timerand.max);
+            hp_min = parseInt(result.timerand.hp_min);
+            if (typeof result.timerand.timeadd == undefined) {
+                timeadd = 0;
+            } else {
+                timeadd = parseInt(result.timerand.timeadd);
+            }
+            if (typeof result.timerand.timeadd == undefined) {
+                timeaddcheck = false;
+            } else {
+                timeaddcheck = result.timerand.timeaddcheck;
+            }
+            $('#timerand_min').prop('min', timerand_min);
+            $('#timerand_min').val(timerand_min);
+            $('#timerand_max').prop('min', timerand_min);
+            $('#timerand_max').val(timerand_max);
+            $('#hp_min').val(hp_min);
+            $('#timeadd').val(timeadd);
+            $('#timeaddcheck').prop('checked',timeaddcheck)
+            $('#timerand_label > span:nth-child(1)').text(timerand_min);
+            $('#timerand_label > span:nth-child(2)').text(timerand_max);
+            $('#timerand_label > span:nth-child(4)').text(hp_min);
+            $('#timerand_label > span:nth-child(6)').text(timeadd);
+        }
     });
 }
